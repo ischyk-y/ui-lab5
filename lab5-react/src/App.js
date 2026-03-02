@@ -1,26 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import MarkdownIt from 'markdown-it';
 import './App.css';
+import ScheduleBoard from './components/ScheduleBoard';
+import ChatAssistant from './components/ChatAssistant';
 
 const API_BASE = process.env.REACT_APP_API_BASE ?? 'http://localhost:5000';
-
-const md = new MarkdownIt({
-  linkify: true,
-  breaks: true,
-});
 
 const initialAssistantMessage = {
   id: 'intro',
   role: 'assistant',
   content: 'Привіт! Я допоможу вести твій розклад. Напиши, що саме додати, змінити або видалити.',
 };
-
-const suggestionList = [
-  'Додай предмет "Програмування" у середу 12:20-13:50 від п. Коваленко',
-  'Зміни посилання на Zoom для "Теорія ймовірностей" у четвер',
-  'Покажи, що у мене заплановано на п’ятницю',
-  'Видали пару "Фізкультура" у вівторок',
-];
 
 const typeLabels = {
   lecture: 'Лекція',
@@ -131,113 +120,21 @@ function App() {
 
   return (
     <div className="app-shell">
-      <aside className="schedule-panel">
-        <header className="panel-header">
-          <div>
-            <p className="panel-eyebrow">Мій тиждень</p>
-            <h1>Розклад університету</h1>
-          </div>
-          <button type="button" className="ghost" onClick={fetchSchedule}>
-            Оновити дані
-          </button>
-        </header>
-
-        {error && <div className="panel-alert">{error}</div>}
-
-        <div className="schedule-board">
-          {orderedDays.map((day) => (
-            <div key={day.id} className="day-card">
-              <h2>{day.title}</h2>
-              {day.entries.length === 0 ? (
-                <p className="day-empty">Вільно</p>
-              ) : (
-                day.entries.map((entry) => (
-                  <article key={entry.id} className="slot-item">
-                    <div className="slot-time">{entry.time || '—'}</div>
-                    <div className="slot-body">
-                      <div className="slot-title-row">
-                        <p className="slot-title">{entry.title}</p>
-                        <span className={`slot-chip slot-chip--${entry.entry_type || 'other'}`}>
-                          {typeLabels[entry.entry_type] || typeLabels.other}
-                        </span>
-                      </div>
-                      {entry.teacher && <p className="slot-sub">{entry.teacher}</p>}
-                      <div className="slot-links">
-                        {entry.location && <span>{entry.location}</span>}
-                        {entry.link && (
-                          <a href={entry.link} target="_blank" rel="noreferrer">
-                            Посилання
-                          </a>
-                        )}
-                        {entry.youtube && (
-                          <a href={entry.youtube} target="_blank" rel="noreferrer">
-                            YouTube
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                ))
-              )}
-            </div>
-          ))}
-        </div>
-      </aside>
-
-      <section className="chat-panel">
-        <header className="chat-header">
-          <div>
-            <p className="panel-eyebrow">Асистент розкладу</p>
-            <h2>Чат керування</h2>
-          </div>
-          <p className="chat-hint">Описуй зміни природною мовою або обери підказку.</p>
-        </header>
-
-        <div className="chat-suggestions">
-          {(suggestions.length ? suggestions : suggestionList).map((text) => (
-            <button
-              type="button"
-              key={text}
-              className="suggestion"
-              onClick={() => setInputValue(text)}
-            >
-              {text}
-            </button>
-          ))}
-        </div>
-
-        <div className="chat-stream" ref={chatRef}>
-          {messages.map((message) => (
-            <article
-              key={message.id}
-              className={`chat-bubble chat-bubble--${message.role}`}
-            >
-              <p className="chat-meta">{message.role === 'user' ? 'Я' : 'Асистент'}</p>
-              <div
-                className="chat-text"
-                dangerouslySetInnerHTML={{ __html: md.render(message.content) }}
-              />
-            </article>
-          ))}
-        </div>
-
-        <form className="chat-composer" onSubmit={handleSend}>
-          <textarea
-            placeholder="Напишіть, що змінити у розкладі..."
-            value={inputValue}
-            onChange={(event) => setInputValue(event.target.value)}
-            rows={3}
-          />
-          <div className="composer-actions">
-            <button type="submit" disabled={!inputValue.trim() || isSending}>
-              {isSending ? 'Надсилаю...' : 'Надіслати'}
-            </button>
-            <p className="composer-hint">
-              Підказка: використовуйте ключові слова «додай», «видали», «зміни», час у форматі 10:00-11:30 та назву в лапках.
-            </p>
-          </div>
-        </form>
-      </section>
+      <ScheduleBoard
+        orderedDays={orderedDays}
+        typeLabels={typeLabels}
+        onRefresh={fetchSchedule}
+        error={error}
+      />
+      <ChatAssistant
+        messages={messages}
+        suggestions={suggestions}
+        inputValue={inputValue}
+        onInputChange={(event) => setInputValue(event.target.value)}
+        onSend={handleSend}
+        isSending={isSending}
+        chatRef={chatRef}
+      />
     </div>
   );
 }
