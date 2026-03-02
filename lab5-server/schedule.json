@@ -1,0 +1,41 @@
+{
+  "monday": [
+    {
+      "id": "663b9230-408f-4237-86ab-a51ea70734ee",
+      "title": "Периферийні пристрої",
+      "teacher": "чисельник",
+      "time": "08:40 - 12:10",
+      "location": "",
+      "link": "",
+      "youtube": "",
+      "entry_type": "lab"
+    },
+    {
+      "id": "9b1ac154-d309-4025-895b-4e2c72b42356",
+      "title": "Інтерфейси користувача",
+      "teacher": "Крамов А.А.",
+      "time": "10:35 - 12:00",
+      "location": "",
+      "link": "https://meet.google.com/syo-ppzt-ipj",
+      "youtube": "",
+      "entry_type": "lab"
+    }
+  ],
+  "tuesday": [
+    {
+      "id": "d4f89d0e-21ae-466c-bbeb-267392e6bc07",
+      "title": "Інтерфейси систем обміну даними",
+      "teacher": "Бойко Ю.В.",
+      "time": "10:35 - 12:10",
+      "location": "",
+      "link": "https://meet.google.com/nqb-hvat-rzs",
+      "youtube": "",
+      "entry_type": "lecture"
+    }
+  ],
+  "wednesday": [],
+  "thursday": [],
+  "friday": [],
+  "saturday": [],
+  "sunday": []
+}
